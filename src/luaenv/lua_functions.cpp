@@ -13,13 +13,31 @@ static int shroomy_say(lua_State* L) {
     return 0;
 }
 
+static int load_wav(lua_State* L) {
+    if (lua_isstring(L, 1) && lua_isstring(L, 2)) {
+        lua_pushboolean(L, Main::Window.LoadWav(lua_tostring(L, 1), lua_tostring(L, 2)));
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
+}
+
+static int play_wav(lua_State* L) {
+    if (lua_isstring(L, 1)) {
+        lua_pushboolean(L, Main::Window.PlayWav(lua_tostring(L, 1)));
+    } else {
+        lua_pushnil(L);
+    }
+
+    return 1;
+}
+
 static int load_texture(lua_State* L) {
     if (lua_isstring(L, 1) && lua_isstring(L, 2)) {
-        Main::Window.LoadTexture(lua_tostring(L, 1), lua_tostring(L, 2));
-
-        lua_pushboolean(L, true);
+        lua_pushboolean(L, Main::Window.LoadTexture(lua_tostring(L, 1), lua_tostring(L, 2)));
     } else {
-        lua_pushboolean(L, false);
+        lua_pushnil(L);
     }
 
     return 1;
@@ -32,11 +50,9 @@ static int render_texture(lua_State* L) {
             (int)lua_tointeger(L, 4), (int)lua_tointeger(L, 5)
         };
 
-        Main::Window.RenderTexture(lua_tostring(L, 1), &rect);
-
-        lua_pushboolean(L, true);
+        lua_pushboolean(L, Main::Window.RenderTexture(lua_tostring(L, 1), &rect));
     } else {
-        lua_pushboolean(L, false);
+        lua_pushnil(L);
     }
 
     return 1;
@@ -49,11 +65,11 @@ static int is_key_pressed(lua_State* L) {
         std::string keybind = lua_tostring(L, 1);
         if (KeyBinds.contains(keybind)) {
             lua_pushboolean(L, Main::Window.IsKeyPressed(KeyBinds[keybind]));
-            return 1;
         }
+    } else {
+        lua_pushnil(L);
     }
-    
-    lua_pushboolean(L, false);
+
     return 1;
 }
 
@@ -91,6 +107,8 @@ void LuaAPI::LoadLuaAPI(LuaInterface *lua_instance) {
     KeyBinds["SPACE"] = SDL_SCANCODE_SPACE;
 
     RegisterFunction(lua_state, "shroomy_say", &shroomy_say);
+    RegisterFunction(lua_state, "play_wav", &play_wav);
+    RegisterFunction(lua_state, "load_wav", &load_wav);
     RegisterFunction(lua_state, "load_texture", &load_texture);
     RegisterFunction(lua_state, "render_texture", &render_texture);
     RegisterFunction(lua_state, "is_key_pressed", &is_key_pressed);

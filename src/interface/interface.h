@@ -1,5 +1,6 @@
 #include <iostream>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_audio.h>
 #include <SDL2/SDL_image.h>
 #include <map>
 #include "../shroomy.h"
@@ -7,10 +8,35 @@
 
 #ifndef INTERFACE
 
+class InterfaceWavSpec {
+    public:
+        SDL_AudioSpec WavSpec;
+        Uint8* Buffer = nullptr;
+        Uint32 Len = 0;
+        SDL_AudioDeviceID AudioDevice = 0;
+        bool valid = false;
+
+        InterfaceWavSpec() {}
+        InterfaceWavSpec(std::string path) {
+            if (SDL_LoadWAV(path.c_str(), &WavSpec, &Buffer, &Len) == NULL)
+                return;
+            AudioDevice = SDL_OpenAudioDevice(NULL, 0, &WavSpec, NULL, 0);
+            if (AudioDevice == 0)
+                return;
+            valid = true;
+        }
+        ~InterfaceWavSpec() {
+            if (AudioDevice != 0)
+                SDL_CloseAudioDevice(AudioDevice);
+            if (Buffer != nullptr)
+                SDL_FreeWAV(Buffer);
+        }
+};
 
 class Interface {
     private:
         std::map<std::string, SDL_Texture*> Textures;
+        std::map<std::string, InterfaceWavSpec*> Sounds;
         SDL_Window* Window = nullptr;
         SDL_Renderer* Renderer = nullptr;
         bool Valid = false;
@@ -20,11 +46,12 @@ class Interface {
 
     public:
         bool IsValid();
-        void Close();
 
         void GetEvents();
         bool IsKeyPressed(SDL_Scancode scancode);
         bool LoadTexture(std::string name, std::string path);
+        bool LoadWav(std::string name, std::string path);
+        bool PlayWav(std::string name);
         bool RenderTexture(std::string name, SDL_Rect* pos);
         void ResizeWindow(int w, int h);
         void Render();
@@ -37,20 +64,17 @@ class Interface {
             }
             if (IMG_Init(IMG_INIT_PNG) == 0) {
                 std::cout << IMG_GetError() << std::endl;
-                SDL_Quit();
                 return;
             }
 
             Window = SDL_CreateWindow(Shroomy::Version.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 0, 0, 0);
             if (Window == nullptr) {
-                Close();
                 std::cout << "SDL Could not create a window, SDL Error: " << SDL_GetError() << std::endl;
                 return;
             }
 
             Renderer = SDL_CreateRenderer(Window, -1, SDL_RENDERER_ACCELERATED);
             if (Window == nullptr) {
-                Close();
                 std::cout << "SDL Could not create a window, SDL Error: " << SDL_GetError() << std::endl;
                 return;
             }
@@ -65,7 +89,22 @@ class Interface {
             Valid = true;
         };
         ~Interface() {
-            Close();
+            if (Renderer != nullptr)
+                SDL_DestroyRenderer(Renderer);
+
+            if (Window != nullptr)
+                SDL_DestroyWindow(Window);
+
+            for (const auto &pair : Textures) {
+                SDL_DestroyTexture(pair.second);
+            }
+
+            for (const auto &pair : Sounds) {
+                delete (pair.second);
+            }
+
+            IMG_Quit();
+            SDL_Quit();
         };
 };
 
