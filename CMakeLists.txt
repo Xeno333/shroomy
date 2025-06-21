@@ -24,5 +24,4 @@ target_link_libraries(shroomy SDL2::SDL2)
 target_link_libraries(shroomy SDL2_image::SDL2_image)
 target_link_libraries(shroomy SDL2_mixer::SDL2_mixer)
 
-
 target_link_libraries(shroomy "${LIBS_DIR}/luajit/src/libluajit.so")
