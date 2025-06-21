@@ -16,7 +16,7 @@ namespace Main {
 
 
 int main(int argc, char** argv) {
-    std::cout << "Starting " << Shroomy::Version << "  Copyright (c) 2025 Xeno333..." << std::endl;
+    std::cout << "Starting " << Shroomy::Version << " Copyright (c) 2025 Xeno333..." << std::endl;
 
     if (!Main::Window.IsValid()){
         std::cout << "Error: Video failed to initialize!" << std::endl;
