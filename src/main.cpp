@@ -11,6 +11,7 @@
 namespace Main {
     bool Running = true;
 
+    std::string Path = ".";
     Interface Window(true);
 }
 
@@ -21,6 +22,11 @@ int main(int argc, char** argv) {
     if (!Main::Window.IsValid()){
         std::cout << "Error: Video failed to initialize!" << std::endl;
         return 1;
+    }
+
+    if (argc > 1) {
+        Main::Path = std::string(argv[1]) + DIR_SEP_CHAR;
+        std::cout << "Loading in path " << Main::Path << std::endl;
     }
 
     Signals::RegisterSignalHandelers();
@@ -38,11 +44,11 @@ int main(int argc, char** argv) {
     LuaMainInstance.RunString("print(\"Initilized internal Lua enviorment\")");
 
     // Run lua code
-    LuaMainInstance.RunFile(std::string("lua") + DIR_SEP_CHAR + "init.lua");
+    LuaMainInstance.RunFile(Main::Path + "lua" + DIR_SEP_CHAR + "init.lua");
 
 
     // Load mods
-    std::string mods = std::string(".") + DIR_SEP_CHAR + "mods" + DIR_SEP_CHAR;
+    std::string mods = Main::Path + "mods" + DIR_SEP_CHAR;
     if (std::filesystem::is_directory(mods)) {
         for (const auto &dir : std::filesystem::directory_iterator(mods)) {
             if (dir.is_directory()) {

@@ -1,9 +1,10 @@
 #include "interface.h"
+#include "../main.h"
 
 
 
 bool Interface::LoadTexture(std::string name, std::string path) {
-    SDL_Surface* surface = IMG_Load(path.c_str());
+    SDL_Surface* surface = IMG_Load((Main::Path + path).c_str());
     if (surface == nullptr) {
         std::cout << "Texture '" << name << "' was not found at '" << path << "'!" << std::endl;
         return false;

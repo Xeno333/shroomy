@@ -1,8 +1,9 @@
 #include "interface.h"
+#include "../main.h"
 
 
 bool Interface::LoadWav(std::string name, std::string path) {
-    Mix_Chunk *sound = Mix_LoadWAV(path.c_str());
+    Mix_Chunk *sound = Mix_LoadWAV((Main::Path + path).c_str());
 
     if (sound != nullptr)
         Sounds[name] = sound;

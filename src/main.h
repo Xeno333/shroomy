@@ -7,6 +7,7 @@ namespace Main {
         std::string Path;
     } Texture;
 
+    extern std::string Path;
     extern Interface Window;
     extern bool Running;
 }
