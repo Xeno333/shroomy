@@ -1,0 +1,3 @@
+namespace Signals{
+    void RegisterSignalHandelers();
+}
