@@ -2,41 +2,18 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_audio.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
 #include <map>
 #include "../shroomy.h"
 
 
 #ifndef INTERFACE
 
-class InterfaceWavSpec {
-    public:
-        SDL_AudioSpec WavSpec;
-        Uint8* Buffer = nullptr;
-        Uint32 Len = 0;
-        SDL_AudioDeviceID AudioDevice = 0;
-        bool valid = false;
-
-        InterfaceWavSpec() {}
-        InterfaceWavSpec(std::string path) {
-            if (SDL_LoadWAV(path.c_str(), &WavSpec, &Buffer, &Len) == NULL)
-                return;
-            AudioDevice = SDL_OpenAudioDevice(NULL, 0, &WavSpec, NULL, 0);
-            if (AudioDevice == 0)
-                return;
-            valid = true;
-        }
-        ~InterfaceWavSpec() {
-            if (AudioDevice != 0)
-                SDL_CloseAudioDevice(AudioDevice);
-            if (Buffer != nullptr)
-                SDL_FreeWAV(Buffer);
-        }
-};
 
 class Interface {
     private:
         std::map<std::string, SDL_Texture*> Textures;
-        std::map<std::string, InterfaceWavSpec*> Sounds;
+        std::map<std::string, Mix_Chunk*> Sounds;
         SDL_Window* Window = nullptr;
         SDL_Renderer* Renderer = nullptr;
         bool Valid = false;
@@ -51,7 +28,7 @@ class Interface {
         bool IsKeyPressed(SDL_Scancode scancode);
         bool LoadTexture(std::string name, std::string path);
         bool LoadWav(std::string name, std::string path);
-        bool PlayWav(std::string name);
+        bool PlaySound(std::string name, int loop);
         bool RenderTexture(std::string name, SDL_Rect* pos);
         void ResizeWindow(int w, int h);
         void Render();
@@ -60,6 +37,10 @@ class Interface {
         Interface(bool print_inited) {
             if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
                 std::cout << SDL_GetError() << std::endl;
+                return;
+            }
+            if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) != 0) {
+                std::cout << Mix_GetError() << std::endl;
                 return;
             }
             if (IMG_Init(IMG_INIT_PNG) == 0) {
@@ -100,10 +81,11 @@ class Interface {
             }
 
             for (const auto &pair : Sounds) {
-                delete (pair.second);
+                Mix_FreeChunk(pair.second);
             }
 
             IMG_Quit();
+            Mix_CloseAudio();
             SDL_Quit();
         };
 };

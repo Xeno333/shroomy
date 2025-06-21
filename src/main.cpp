@@ -52,6 +52,7 @@ int main(int argc, char** argv) {
         }
     }
 
+
     if (LuaMainInstance.RunString("assert(GameLoop)")) {
         auto last_tick = std::chrono::high_resolution_clock::now();
 

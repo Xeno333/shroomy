@@ -23,9 +23,9 @@ static int load_wav(lua_State* L) {
     return 1;
 }
 
-static int play_wav(lua_State* L) {
-    if (lua_isstring(L, 1)) {
-        lua_pushboolean(L, Main::Window.PlayWav(lua_tostring(L, 1)));
+static int play_sound(lua_State* L) {
+    if (lua_isstring(L, 1), lua_isnumber(L, 2)) {
+        lua_pushboolean(L, Main::Window.PlaySound(lua_tostring(L, 1), (int)lua_tointeger(L, 2)));
     } else {
         lua_pushnil(L);
     }
@@ -107,7 +107,7 @@ void LuaAPI::LoadLuaAPI(LuaInterface *lua_instance) {
     KeyBinds["SPACE"] = SDL_SCANCODE_SPACE;
 
     RegisterFunction(lua_state, "shroomy_say", &shroomy_say);
-    RegisterFunction(lua_state, "play_wav", &play_wav);
+    RegisterFunction(lua_state, "play_sound", &play_sound);
     RegisterFunction(lua_state, "load_wav", &load_wav);
     RegisterFunction(lua_state, "load_texture", &load_texture);
     RegisterFunction(lua_state, "render_texture", &render_texture);

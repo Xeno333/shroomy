@@ -2,26 +2,28 @@
 
 
 bool Interface::LoadWav(std::string name, std::string path) {
-    InterfaceWavSpec *spec = new InterfaceWavSpec(path);
+    Mix_Chunk *sound = Mix_LoadWAV(path.c_str());
 
-    if (spec -> valid)
-        Sounds[name] = spec;
+    if (sound != nullptr)
+        Sounds[name] = sound;
     else {
-        delete spec;
+        std::cout << "Wav file '" << name << "' could not be loaded!" << std::endl;
+        std::cout << SDL_GetError() << std::endl;
         return false;
     }
 
     return true;
 }
 
-bool Interface::PlayWav(std::string name) {
+bool Interface::PlaySound(std::string name, int loop) {
     if (Sounds.contains(name)) {
-        if (SDL_QueueAudio(Sounds[name] -> AudioDevice, Sounds[name] -> Buffer, Sounds[name] -> Len) == 0) {
-            SDL_PauseAudioDevice(Sounds[name] -> AudioDevice, 0);
+        if (Mix_PlayChannel(-1, Sounds[name], loop) != -1) {
             return true;
-        }else {
+        } else {
             std::cout << SDL_GetError() << std::endl;
         }
+    } else {
+        std::cout << "Sound '" << name << "' was not found!" << std::endl;
     }
 
     return false;

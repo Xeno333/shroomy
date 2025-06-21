@@ -17,9 +17,12 @@ target_include_directories(shroomy PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/libs/lua
 
 find_package(SDL2 CONFIG REQUIRED)
 find_package(SDL2_image CONFIG REQUIRED)
+find_package(SDL2_mixer CONFIG REQUIRED)
+
 
 target_link_libraries(shroomy SDL2::SDL2)
 target_link_libraries(shroomy SDL2_image::SDL2_image)
+target_link_libraries(shroomy SDL2_mixer::SDL2_mixer)
 
 
 target_link_libraries(shroomy "${LIBS_DIR}/luajit/src/libluajit.so")
