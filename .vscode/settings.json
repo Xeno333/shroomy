@@ -70,6 +70,8 @@
         "codecvt": "cpp",
         "filesystem": "cpp",
         "ios": "cpp",
-        "csignal": "cpp"
+        "csignal": "cpp",
+        "locale": "cpp",
+        "fstream": "cpp"
     }
 }

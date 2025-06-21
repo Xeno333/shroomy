@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
     LuaMainInstance.RunString("print(\"Initilized internal Lua enviorment\")");
 
     // Run lua code
-    LuaMainInstance.RunFile(Main::Path + "lua" + DIR_SEP_CHAR + "init.lua");
+    LuaMainInstance.RunFile(Main::Path + "init.lua");
 
 
     // Load mods

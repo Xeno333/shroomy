@@ -1,4 +1,6 @@
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <map>
 #include "lua_functions.h"
 #include "luaenv.h"
@@ -65,11 +67,11 @@ static int is_key_pressed(lua_State* L) {
         std::string keybind = lua_tostring(L, 1);
         if (KeyBinds.contains(keybind)) {
             lua_pushboolean(L, Main::Window.IsKeyPressed(KeyBinds[keybind]));
+            return 1;
         }
-    } else {
-        lua_pushnil(L);
     }
 
+    lua_pushnil(L);
     return 1;
 }
 
@@ -101,10 +103,31 @@ void LuaAPI::LoadLuaAPI(LuaInterface *lua_instance) {
     lua_newtable(lua_state);
     lua_setglobal(lua_state, "shroomy");
 
-    KeyBinds["FORWARD"] = SDL_SCANCODE_D;
-    KeyBinds["BACKWARD"] = SDL_SCANCODE_A;
-    KeyBinds["UP"] = SDL_SCANCODE_W;
-    KeyBinds["SPACE"] = SDL_SCANCODE_SPACE;
+    std::ifstream keyconf(Main::Path + "keyconf.scf");
+    if (keyconf.is_open()) {
+        std::string line_in;
+        while (std::getline(keyconf, line_in)) {
+            std::stringstream parts_in(line_in);
+
+            std::string key;
+            if (std::getline(parts_in, key, ' ')) {
+                std::string scancode;
+                if (std::getline(parts_in, scancode)) {
+                    KeyBinds[key] = (SDL_Scancode)std::stoi(scancode);
+                } else {
+                    std::cout << "Warning: missing scancode for keybind '" << key << "'" << std::endl;
+                }
+            }
+        }
+
+        keyconf.close();
+    } else {
+        KeyBinds["FORWARD"] = SDL_SCANCODE_D;
+        KeyBinds["BACKWARD"] = SDL_SCANCODE_A;
+        KeyBinds["UP"] = SDL_SCANCODE_W;
+        KeyBinds["DOWN"] = SDL_SCANCODE_S;
+        KeyBinds["SPACE"] = SDL_SCANCODE_SPACE;
+    }
 
     RegisterFunction(lua_state, "shroomy_say", &shroomy_say);
     RegisterFunction(lua_state, "play_sound", &play_sound);
