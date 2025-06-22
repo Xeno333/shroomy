@@ -6,7 +6,8 @@
 #include "luaenv/luaenv.h"
 #include "luaenv/lua_functions.h"
 #include "main.h"
-#include "signal.h"
+#include "shroomysignal.h"
+#include "internal_lua/internal_lua.h"
 
 namespace Main {
     bool Running = true;
@@ -29,7 +30,7 @@ int main(int argc, char** argv) {
         std::cout << "Loading in path " << Main::Path << std::endl;
     }
 
-    Signals::RegisterSignalHandelers();
+    ShroomySignals::RegisterSignalHandelers();
 
 
     // LuaMainInstance
@@ -41,7 +42,8 @@ int main(int argc, char** argv) {
     std::cout << "Initilized LuaJIT" << std::endl;
 
     LuaAPI::LoadLuaAPI(&LuaMainInstance);
-    LuaMainInstance.RunString("print(\"Initilized internal Lua enviorment\")");
+
+    InternalLua::RunInternalLua(&LuaMainInstance);
 
     // Run lua code
     LuaMainInstance.RunFile(Main::Path + "init.lua");

@@ -1,5 +1,5 @@
 #include "interface.h"
-#include "../main.h"
+#include "main.h"
 
 
 

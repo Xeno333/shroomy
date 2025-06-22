@@ -1,3 +1,3 @@
-namespace Signals{
+namespace ShroomySignals{
     void RegisterSignalHandelers();
 }

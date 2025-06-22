@@ -1,7 +1,7 @@
 
 #include <SDL2/SDL.h>
 #include "interface.h"
-#include "../main.h"
+#include "main.h"
 
 
 void Interface::GetEvents() {

@@ -4,7 +4,7 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
 #include <map>
-#include "../shroomy.h"
+#include "shroomy.h"
 
 
 #ifndef INTERFACE

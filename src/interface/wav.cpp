@@ -1,5 +1,5 @@
 #include "interface.h"
-#include "../main.h"
+#include "main.h"
 
 
 bool Interface::LoadWav(std::string name, std::string path) {

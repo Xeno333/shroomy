@@ -4,8 +4,8 @@
 #include <map>
 #include "lua_functions.h"
 #include "luaenv.h"
-#include "../main.h"
-#include "../interface/interface.h"
+#include "main.h"
+#include "interface/interface.h"
 
 
 
