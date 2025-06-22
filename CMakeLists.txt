@@ -14,7 +14,7 @@ file(GLOB_RECURSE SRCS "${SRC_DIR}/*.cpp")
 
 file(READ "${SRC_DIR}/lua/lua.lua" LUA_LUA)
 
-configure_file("${SRC_DIR}/internal_lua/internal_lua_files.h" "${BLOB_DIR}/internal_lua_files.h" @ONLY)
+configure_file("${SRC_DIR}/internal_lua/internal_lua_files.h.in" "${BLOB_DIR}/internal_lua_files.h" @ONLY)
 
 add_executable(shroomy ${SRCS})
 
