@@ -28,8 +28,7 @@ if(DEBUG)
         -static
         -O0
     )
-
-else(BUILD)
+else()
     #target_compile_definitions(shroomy PRIVATE SHROOMY_BUILD)
     target_compile_options(shroomy PRIVATE
         -static
