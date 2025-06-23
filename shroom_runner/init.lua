@@ -1,6 +1,6 @@
 local tick = 0
-local alive = true
-
+local alive = false
+local level = 1
 
 local shroom_world = {
     x = 1200,
@@ -16,10 +16,15 @@ shroomy.load_texture("bad_shroom", "textures/bad_shroom.png")
 local shooms = {}
 
 function OnGameTick()
-    tick = tick + 1
-    --shroomy.shroomy_say("Tick!")
-    if alive and math.random(1, 20) == 1 then
-        shooms[tick] = shroom_world.x
+    tick = tick + 1    
+
+    if alive then
+        if tick % 30 == 0 then
+            level = level + 1
+        end
+        if math.random(1, 20) == 1 then
+            shooms[tick] = shroom_world.x
+        end
     end
 end
 
@@ -40,11 +45,15 @@ function GameLoop()
             x = 100,
             y = shroom_world.y,
         }
+        level = 1
+        tick = 0
     end
 
-    --shroomy.render_texture("shroom_boy", 0, 0, shroom_world.x, shroom_world.y)
-
     if alive then
+        for i = 1, level do
+            shroomy.render_texture("shroom_boy", 32 * i, 32, 32, 32)
+        end
+
         if pos.y >= shroom_world.y and shroomy.is_key_pressed("SPACE") then
             jumping = 200
         end
@@ -70,20 +79,26 @@ function GameLoop()
         end
 
         shroomy.render_texture("shroom_boy", pos.x, pos.y, 64, 64)
-    end
 
-    for i, x in pairs(shooms) do
-        if not (hight > 32) and ((pos.x > x and pos.x < x+32) or (pos.x < x and pos.x > x-32)) then
-            alive = false
-        end
-        shroomy.render_texture("bad_shroom", x, shroom_world.y+32, 32, 32)
 
-        if alive then
-            shooms[i] = x - 5
-            if shooms[i] < 0 then
-                shooms[i] = nil
+        -- Bad shrooms
+
+        for i, x in pairs(shooms) do
+            if not (hight > 32) and ((pos.x > x and pos.x < x+32) or (pos.x < x and pos.x > x-32)) then
+                alive = false
+            end
+            shroomy.render_texture("bad_shroom", x, shroom_world.y+32, 32, 32)
+
+            if alive then
+                shooms[i] = x - 5
+                if shooms[i] < 0 then
+                    shooms[i] = nil
+                end
             end
         end
+
+    else
+        shroomy.render_texture("shroom_boy", 0, 0, shroom_world.x, shroom_world.y)
     end
 
 end

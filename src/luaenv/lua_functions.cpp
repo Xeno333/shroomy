@@ -89,6 +89,12 @@ static int set_window_size(lua_State* L) {
 
 
 
+
+
+// Registration
+
+
+
 void RegisterFunction(lua_State* lua_state, std::string name, int (*func)(lua_State*)) {
     lua_getglobal(lua_state, "shroomy");
 
