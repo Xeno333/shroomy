@@ -20,6 +20,7 @@ configure_file("${SRC_DIR}/internal_lua/internal_lua_files.h.in" "${BLOB_DIR}/in
 file(GLOB_RECURSE SRCS "${SRC_DIR}/*.cpp")
 add_executable(shroomy ${SRCS})
 
+# Compile flags
 if(DEBUG)
     #target_compile_definitions(shroomy PRIVATE SHROOMY_DEBUG)
     message("WARNING: Making debug version")
@@ -36,7 +37,6 @@ else()
     )
 endif()
 
-# Compile flags
 target_compile_options(shroomy PRIVATE "-std=c++20")
 
 # Includs
