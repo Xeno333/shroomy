@@ -136,8 +136,8 @@ void LuaAPI::LoadLuaAPI(LuaInterface *lua_instance) {
     }
 
     RegisterFunction(lua_state, "shroomy_say", &shroomy_say);
-    RegisterFunction(lua_state, "play_sound", &play_sound);
     RegisterFunction(lua_state, "load_wav", &load_wav);
+    RegisterFunction(lua_state, "play_sound", &play_sound);
     RegisterFunction(lua_state, "load_texture", &load_texture);
     RegisterFunction(lua_state, "render_texture", &render_texture);
     RegisterFunction(lua_state, "is_key_pressed", &is_key_pressed);
