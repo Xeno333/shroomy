@@ -1,6 +1,6 @@
-local tick = 0
+local time = 0
 local alive = false
-local level = 1
+local level = 0
 
 local shroom_world = {
     x = 1200,
@@ -9,25 +9,11 @@ local shroom_world = {
 shroomy.set_window_size(shroom_world.x, shroom_world.y + 64)
 shroomy.load_texture("shroom_boy", "textures/shroom_boy.png")
 shroomy.load_texture("bad_shroom", "textures/bad_shroom.png")
-
+shroomy.set_tick(17)
 
 
 
 local shooms = {}
-
-function OnGameTick()
-    tick = tick + 1    
-
-    if alive then
-        if tick % 30 == 0 then
-            level = level + 1
-        end
-        if math.random(1, 20) == 1 then
-            shooms[tick] = shroom_world.x
-        end
-    end
-end
-
 
 local pos = {
     x = 100,
@@ -35,9 +21,13 @@ local pos = {
 }
 local jumping = 0
 local hight = 0
+local next_level_at = 0
 
-function GameLoop()
+function OnGameTick(time_ms)
+    time = time + time_ms
+
     if shroomy.is_key_pressed("UP") then
+        shroomy.set_tick(17)
         alive = true
         shooms = {}
         hight = 0
@@ -45,13 +35,19 @@ function GameLoop()
             x = 100,
             y = shroom_world.y,
         }
-        level = 1
-        tick = 0
+        level = 0
+        time = 0
+        next_level_at = 0
+        return
     end
 
     if alive then
-        for i = 1, level do
-            shroomy.render_texture("shroom_boy", 32 * i, 32, 32, 32)
+        if time > next_level_at then
+            next_level_at = time + 30000
+            level = level + 1
+        end
+        if math.random(1, 50) == 1 then
+            shooms[time] = shroom_world.x
         end
 
         if pos.y >= shroom_world.y and shroomy.is_key_pressed("SPACE") then
@@ -78,16 +74,11 @@ function GameLoop()
             hight = hight - 7
         end
 
-        shroomy.render_texture("shroom_boy", pos.x, pos.y, 64, 64)
-
-
         -- Bad shrooms
-
         for i, x in pairs(shooms) do
-            if not (hight > 32) and ((pos.x > x and pos.x < x+32) or (pos.x < x and pos.x > x-32)) then
+            if (hight <= 32) and (pos.x < x and pos.x > x-32) then
                 alive = false
             end
-            shroomy.render_texture("bad_shroom", x, shroom_world.y+32, 32, 32)
 
             if alive then
                 shooms[i] = x - 5
@@ -96,9 +87,25 @@ function GameLoop()
                 end
             end
         end
+    end
+end
+
+
+
+function RenderLoop()
+    if alive then
+        for i = 1, level do
+            shroomy.render_texture("shroom_boy", 32 * i, 32, 32, 32)
+        end
+
+        shroomy.render_texture("shroom_boy", pos.x, pos.y, 64, 64)
+
+        -- Bad shrooms
+        for i, x in pairs(shooms) do
+            shroomy.render_texture("bad_shroom", x, shroom_world.y+32, 32, 32)
+        end
 
     else
         shroomy.render_texture("shroom_boy", 0, 0, shroom_world.x, shroom_world.y)
     end
-
 end

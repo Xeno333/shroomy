@@ -73,6 +73,8 @@
         "csignal": "cpp",
         "locale": "cpp",
         "fstream": "cpp",
-        "*.lua": "cpp"
+        "*.lua": "cpp",
+        "text_encoding": "cpp",
+        "__bit_reference": "cpp"
     }
 }

@@ -87,6 +87,18 @@ static int set_window_size(lua_State* L) {
     return 1;
 }
 
+static int set_tick(lua_State* L) {
+    if (lua_isnumber(L, 1)) {
+        Main::tick_time_ms = (int)lua_tointeger(L, 1);
+
+        lua_pushboolean(L, true);
+        return 1;
+    }
+    
+    lua_pushboolean(L, false);
+    return 1;
+}
+
 
 
 
@@ -135,6 +147,7 @@ void LuaAPI::LoadLuaAPI(LuaInterface *lua_instance) {
         KeyBinds["SPACE"] = SDL_SCANCODE_SPACE;
     }
 
+    RegisterFunction(lua_state, "set_tick", &set_tick);
     RegisterFunction(lua_state, "shroomy_say", &shroomy_say);
     RegisterFunction(lua_state, "load_wav", &load_wav);
     RegisterFunction(lua_state, "play_sound", &play_sound);

@@ -22,7 +22,7 @@ add_executable(shroomy ${SRCS})
 
 # Compile flags
 if(DEBUG)
-    #target_compile_definitions(shroomy PRIVATE SHROOMY_DEBUG)
+    target_compile_definitions(shroomy PRIVATE SHROOMY_DEBUG)
     message("WARNING: Making debug version")
     target_compile_options(shroomy PRIVATE
         -Wall -Wextra

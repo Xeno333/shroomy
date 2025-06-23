@@ -9,5 +9,6 @@ namespace Main {
 
     extern std::string Path;
     extern Interface Window;
+    extern int tick_time_ms;
     extern bool Running;
 }

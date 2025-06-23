@@ -23,3 +23,17 @@ All the lua API functions are located in the `shroomy` table.
 
 - `set_window_size(w, h)`
     Set window size in pixels of `w, h`. Returens `true` unless bad params, in which case `false` is returned.
+
+- `set_tick(ms)`
+    Set tick rate at which `OnGameTick(ms)` is called. Returns `true`/`false` based on params being valid number. Default is `10` ms.
+
+
+# Game defined functions
+
+In order for a game to run one of the two game functions **MUST** be set.
+
+- `RenderLoop()`
+    Run every frame, this is for rendering, high res physics, etc.
+
+- `OnGameTick(ms)`
+    Run once every game tick. For main game code, controls etc.
