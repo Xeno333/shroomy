@@ -5,4 +5,7 @@ namespace InternalLuaFiles {
     static const std::string MainLua(R"--LuaFileInC++--(
         @LUA_LUA@
     )--LuaFileInC++--");
+    static const std::string Entities(R"--LuaFileInC++--(
+        @ENTITIES_LUA@
+    )--LuaFileInC++--");
 }

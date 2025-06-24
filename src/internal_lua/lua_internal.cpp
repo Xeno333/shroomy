@@ -6,6 +6,7 @@
 
 void InternalLua::RunInternalLua(LuaInterface* env) {
     env -> RunString(InternalLuaFiles::MainLua);
+    env -> RunString(InternalLuaFiles::Entities);
 
     env -> RunString("print(\"Initilized internal Lua enviorment\")");
 }

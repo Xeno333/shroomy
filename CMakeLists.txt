@@ -14,6 +14,7 @@ set(BLOB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/blob")
 
 # Include Lua sources
 file(READ "${SRC_DIR}/lua/lua.lua" LUA_LUA)
+file(READ "${SRC_DIR}/lua/entities.lua" ENTITIES_LUA)
 configure_file("${SRC_DIR}/internal_lua/internal_lua_files.h.in" "${BLOB_DIR}/internal_lua_files.h" @ONLY)
 
 # Output

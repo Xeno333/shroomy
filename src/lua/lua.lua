@@ -33,29 +33,3 @@ end
 
 
 
-
-entity = {}
-
-function entity.new(tiles, pos)
-    return {
-        pos = {
-            x = pos.x,
-            y = pos.y
-        },
-        tiles = tiles,
-        current_tile = 1,
-        render_next_frame = function(self)
-            if #(self.tiles) ~= 1 then
-                if #(self.tiles) == self.current_tile then
-                    self.current_tile = 1
-                else
-                    self.current_tile = self.current_tile + 1
-                end
-            end
-
-            local tile = self.tiles[self.current_tile]
-
-            shroomy.render_texture(tile.texture, self.pos.x, self.pos.y, tile.w, tile.h)
-        end
-    }
-end

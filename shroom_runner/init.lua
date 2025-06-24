@@ -15,10 +15,8 @@ shroomy.set_tick(17)
 
 local shrooms = {}
 
-local pos = {
-    x = 100,
-    y = shroom_world.y,
-}
+local shroom_boy = entity.new({"shroom_boy"}, {x = 100, y = shroom_world.y}, {y = 64, x = 64})
+
 local jumping = 0
 local hight = 0
 local next_level_at = 0
@@ -27,14 +25,10 @@ function OnGameTick(time_ms)
     time = time + time_ms
 
     if shroomy.is_key_pressed("UP") then
-        shroomy.set_tick(17)
         alive = true
         shrooms = {}
         hight = 0
-        pos = {
-            x = 100,
-            y = shroom_world.y,
-        }
+        shroom_boy.pos = {x = 100, y = shroom_world.y}
         level = 0
         time = 0
         next_level_at = 0
@@ -46,10 +40,12 @@ function OnGameTick(time_ms)
             next_level_at = time + 30000
             level = level + 1
         end
-        if math.random(1, 50) == 1 then
+        if #shrooms ~= 1 then
             --shrooms[time] = shroom_world.x
-            shrooms[time] = entity.new({{texture = "bad_shroom", h = 32, w = 32}}, {x = shroom_world.x, y = shroom_world.y+32})
+            shrooms[1] = entity.new({"bad_shroom"}, {x = shroom_world.x, y = shroom_world.y+32}, {y = 32, x = 32})
         end
+
+        local pos = shroom_boy.pos
 
         if pos.y >= shroom_world.y and shroomy.is_key_pressed("SPACE") then
             jumping = 200
@@ -77,7 +73,7 @@ function OnGameTick(time_ms)
 
         -- Bad shrooms
         for i, v in pairs(shrooms) do
-            if (hight <= 32) and (pos.x < v.pos.x and pos.x > v.pos.x-32) then
+            if shroom_boy:is_collided(v) then
                 alive = false
             end
 
@@ -99,7 +95,7 @@ function RenderLoop()
             shroomy.render_texture("shroom_boy", 32 * i, 32, 32, 32)
         end
 
-        shroomy.render_texture("shroom_boy", pos.x, pos.y, 64, 64)
+        shroom_boy:render_next_frame()
 
         -- Bad shrooms
         for i, x in pairs(shrooms) do

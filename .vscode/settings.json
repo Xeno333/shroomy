@@ -75,6 +75,7 @@
         "fstream": "cpp",
         "*.lua": "cpp",
         "text_encoding": "cpp",
-        "__bit_reference": "cpp"
+        "__bit_reference": "cpp",
+        "__functional_03": "cpp"
     }
 }
