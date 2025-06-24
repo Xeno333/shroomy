@@ -15,7 +15,7 @@ shroomy.set_tick(17)
 
 local shrooms = {}
 
-local shroom_boy = entity.new({"shroom_boy"}, {x = 100, y = shroom_world.y}, {y = 64, x = 64})
+local shroom_boy = entity.new({"shroom_boy", "bad_shroom"}, 100, {x = 100, y = shroom_world.y}, {y = 64, x = 64})
 
 local jumping = 0
 local hight = 0
@@ -40,9 +40,8 @@ function OnGameTick(time_ms)
             next_level_at = time + 30000
             level = level + 1
         end
-        if #shrooms ~= 1 then
-            --shrooms[time] = shroom_world.x
-            shrooms[1] = entity.new({"bad_shroom"}, {x = shroom_world.x, y = shroom_world.y+32}, {y = 32, x = 32})
+        if math.random(1,50) == 1 then
+            shrooms[time] = entity.new({"bad_shroom"}, nil, {x = shroom_world.x-32, y = shroom_world.y+32}, {y = 32, x = 32})
         end
 
         local pos = shroom_boy.pos
@@ -71,17 +70,18 @@ function OnGameTick(time_ms)
             hight = hight - 7
         end
 
+        shroom_boy:next_frame(time_ms)
+
         -- Bad shrooms
         for i, v in pairs(shrooms) do
             if shroom_boy:is_collided(v) then
                 alive = false
+                break
             end
 
-            if alive then
-                shrooms[i].pos.x = v.pos.x - 5
-                if shrooms[i].pos.x < 0 then
-                    shrooms[i] = nil
-                end
+            shrooms[i].pos.x = v.pos.x - 5
+            if shrooms[i].pos.x < 0 then
+                shrooms[i] = nil
             end
         end
     end
@@ -95,11 +95,11 @@ function RenderLoop()
             shroomy.render_texture("shroom_boy", 32 * i, 32, 32, 32)
         end
 
-        shroom_boy:render_next_frame()
+        shroom_boy:render()
 
         -- Bad shrooms
         for i, x in pairs(shrooms) do
-            x:render_next_frame()
+            x:render()
         end
 
     else
