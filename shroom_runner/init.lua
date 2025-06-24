@@ -47,7 +47,8 @@ function OnGameTick(time_ms)
             level = level + 1
         end
         if math.random(1, 50) == 1 then
-            shooms[time] = shroom_world.x
+            --shooms[time] = shroom_world.x
+            shooms[time] = entity.new({{texture = "bad_shroom", h = 32, w = 32}}, {x = shroom_world.x, y = shroom_world.y+32})
         end
 
         if pos.y >= shroom_world.y and shroomy.is_key_pressed("SPACE") then
@@ -75,14 +76,14 @@ function OnGameTick(time_ms)
         end
 
         -- Bad shrooms
-        for i, x in pairs(shooms) do
-            if (hight <= 32) and (pos.x < x and pos.x > x-32) then
+        for i, v in pairs(shooms) do
+            if (hight <= 32) and (pos.x < v.pos.x and pos.x > v.pos.x-32) then
                 alive = false
             end
 
             if alive then
-                shooms[i] = x - 5
-                if shooms[i] < 0 then
+                shooms[i].pos.x = v.pos.x - 5
+                if shooms[i].pos.x < 0 then
                     shooms[i] = nil
                 end
             end
@@ -102,7 +103,7 @@ function RenderLoop()
 
         -- Bad shrooms
         for i, x in pairs(shooms) do
-            shroomy.render_texture("bad_shroom", x, shroom_world.y+32, 32, 32)
+            x:render_next_frame()
         end
 
     else
