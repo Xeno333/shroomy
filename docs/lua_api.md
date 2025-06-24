@@ -28,6 +28,44 @@ All the lua API functions are located in the `shroomy` table.
     Set tick rate at which `OnGameTick(ms)` is called. Returns `true`/`false` based on params being valid number. Default is `10` ms.
 
 
+# Lua provided
+
+This type of function is a global function that can be called for anything.
+
+- `dump(data)`
+    Dumps data of any type, including tables.
+
+
+# Entities through the lua `entity` API
+
+There is a entity API defined internaly in lua, i.e. it runs in lua and does all the C++ calls that are needed to provide a simple interface. Entities use a class like structure anc can be created using `entity.new(tiles, frame_time_ms, pos, size)`.
+
+## `entity` API
+
+- `new(tiles, frame_time_ms, pos, size)`
+    Returns an entity object.
+
+## Entity object
+
+Entities are objects defined in lua. The methods are all shared with `entity`.
+
+### Methods
+
+- `next_frame(self, time_since_last_ms)`
+    Loads next frame for rendering, does not render. `time_since_last_ms` is the number of ms since last frame switch, to ensure proper FPS for an entity.
+
+- `render(self)`
+    Render entity.
+
+- `is_collided(self, collider)`
+    Check for collision between `self` and `collider`, where both are entities.
+
+### Data
+
+- `pos = {x = <x>, y = <y>}`
+    Position of entity.
+
+
 # Game defined functions
 
 In order for a game to run one of the two game functions **MUST** be set.

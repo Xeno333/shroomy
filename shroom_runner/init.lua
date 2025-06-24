@@ -15,7 +15,7 @@ shroomy.set_tick(17)
 
 local shrooms = {}
 
-local shroom_boy = entity.new({"shroom_boy", "bad_shroom"}, 100, {x = 100, y = shroom_world.y}, {y = 64, x = 64})
+local shroom_boy = entity.new({"shroom_boy"}, 0, {x = 100, y = shroom_world.y}, {y = 64, x = 64}, {x_min = -24, x_max = 24, y_min = -24, y_max = 32})
 
 local jumping = 0
 local hight = 0
@@ -41,7 +41,7 @@ function OnGameTick(time_ms)
             level = level + 1
         end
         if math.random(1,50) == 1 then
-            shrooms[time] = entity.new({"bad_shroom"}, nil, {x = shroom_world.x-32, y = shroom_world.y+32}, {y = 32, x = 32})
+            shrooms[time] = entity.new({"bad_shroom"}, nil, {x = shroom_world.x-32, y = shroom_world.y+32}, {y = 32, x = 32}, {x_min = -12, x_max = 12, y_min = -12, y_max = 16})
         end
 
         local pos = shroom_boy.pos

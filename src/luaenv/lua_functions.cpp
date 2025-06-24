@@ -121,6 +121,15 @@ void LuaAPI::LoadLuaAPI(LuaInterface *lua_instance) {
     lua_newtable(lua_state);
     lua_setglobal(lua_state, "shroomy");
 
+    #ifdef SHROOMY_DEBUG
+        lua_getglobal(lua_state, "shroomy");
+
+        lua_pushboolean(lua_state, true);
+        lua_setfield(lua_state, -2, "IS_DEBUG");
+
+        lua_pop(lua_state, 1);
+    #endif
+
     std::ifstream keyconf(Main::Path + "keyconf.scf");
     if (keyconf.is_open()) {
         std::string line_in;
