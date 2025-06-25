@@ -22,14 +22,28 @@ file(GLOB_RECURSE SRCS "${SRC_DIR}/*.cpp")
 add_executable(shroomy ${SRCS})
 
 # Compile flags
+if(DEBUG_LUA)
+    message("WARNING: Making lua debug version")
+    target_compile_definitions(shroomy PRIVATE SHROOMY_DEBUG_LUA)
+endif()
+
 if(DEBUG)
-    target_compile_definitions(shroomy PRIVATE SHROOMY_DEBUG)
     message("WARNING: Making debug version")
-    target_compile_options(shroomy PRIVATE
-        -Wall -Wextra
-        -static
-        -O0
-    )
+    target_compile_definitions(shroomy PRIVATE SHROOMY_DEBUG)
+
+    if(OPTIMIZED_DEBUG)
+        target_compile_options(shroomy PRIVATE
+            -Wall -Wextra
+            -static
+            -Ofast
+        )
+    else()
+        target_compile_options(shroomy PRIVATE
+            -Wall -Wextra
+            -static
+            -O0
+        )
+    endif()
 else()
     #target_compile_definitions(shroomy PRIVATE SHROOMY_BUILD)
     target_compile_options(shroomy PRIVATE

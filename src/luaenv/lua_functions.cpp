@@ -121,7 +121,7 @@ void LuaAPI::LoadLuaAPI(LuaInterface *lua_instance) {
     lua_newtable(lua_state);
     lua_setglobal(lua_state, "shroomy");
 
-    #ifdef SHROOMY_DEBUG
+    #ifdef SHROOMY_DEBUG_LUA
         lua_getglobal(lua_state, "shroomy");
 
         lua_pushboolean(lua_state, true);
