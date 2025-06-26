@@ -33,3 +33,9 @@ end
 
 
 
+function shroomy.random(min, max)
+    if min < 0 then return nil end
+    return math.floor(
+        ((math.abs(shroomy.k_random())/18446744073709551615) * ((max * 2) - min + 1)) + min
+    )
+end

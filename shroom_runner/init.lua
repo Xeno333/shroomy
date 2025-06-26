@@ -40,7 +40,7 @@ function OnGameTick(time_ms)
             next_level_at = time + 30000
             level = level + 1
         end
-        if math.random(1,50) == 1 then
+        if shroomy.random(1, 50) == 1 then
             shrooms[time] = entity.new({"bad_shroom"}, nil, {x = shroom_world.x-32, y = shroom_world.y+32}, {y = 32, x = 32}, {x_min = -12, x_max = 12, y_min = -12, y_max = 16})
         end
 

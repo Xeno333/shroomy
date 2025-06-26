@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <map>
+#include <chrono>
 #include "lua_functions.h"
 #include "luaenv.h"
 #include "main.h"
@@ -99,7 +100,21 @@ static int set_tick(lua_State* L) {
     return 1;
 }
 
+unsigned long long k_random_seed;
+unsigned long long k_random_current_rand = 0;
+unsigned long long k_random_rand_s = 0;
 
+static int k_random(lua_State* L) {
+    unsigned long long r = k_random_current_rand | ~k_random_seed;
+    r *= 2734848569;
+    k_random_current_rand = r  ^ k_random_rand_s;
+
+    k_random_rand_s += k_random_current_rand;
+
+
+    lua_pushinteger(L, (lua_Integer)k_random_current_rand);
+    return 1;
+}
 
 
 
@@ -156,6 +171,9 @@ void LuaAPI::LoadLuaAPI(LuaInterface *lua_instance) {
         KeyBinds["SPACE"] = SDL_SCANCODE_SPACE;
     }
 
+    k_random_seed = (unsigned long long)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+
+    RegisterFunction(lua_state, "k_random", &k_random);
     RegisterFunction(lua_state, "set_tick", &set_tick);
     RegisterFunction(lua_state, "shroomy_say", &shroomy_say);
     RegisterFunction(lua_state, "load_wav", &load_wav);

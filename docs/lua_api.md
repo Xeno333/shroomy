@@ -27,6 +27,11 @@ All the lua API functions are located in the `shroomy` table.
 - `set_tick(ms)`
     Set tick rate at which `OnGameTick(ms)` is called. Returns `true`/`false` based on params being valid number. Default is `10` ms.
 
+- `random(min, max)`
+    Returns an integar between min and max. **WARNING**: Not true random.
+
+- `k_random()`
+    Returns an number. **WARNING**: Not true random, this is for internal use in `random`.
 
 # Lua provided
 
