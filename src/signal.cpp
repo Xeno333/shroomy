@@ -5,7 +5,9 @@
 
 void HandelSystemQuitSignals(int signal) {
     std::cout << signal << std::endl;
-    if (signal == SIGQUIT || signal == SIGTERM || signal == SIGINT)
+    if (signal == SIGTERM)
+        abort();
+    else if (signal == SIGQUIT || signal == SIGINT)
         Main::Running = false;
 }
 

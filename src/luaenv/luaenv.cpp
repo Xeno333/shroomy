@@ -27,9 +27,11 @@ lua_State* LuaInterface::GetTheState() {
 }
 
 
-bool LuaInterface::RunString(std::string lua_string) {
+bool LuaInterface::RunString(std::string lua_string, bool show_output) {
     if (luaL_dostring(LuaState, lua_string.c_str()) != LUA_OK) {
-        std::cout << "LuaEnv Error: " << lua_tostring(LuaState, -1) << std::endl;
+        if (show_output) {
+            std::cout << "LuaEnv Error: " << lua_tostring(LuaState, -1) << std::endl;
+        }
         lua_pop(LuaState, 1);
         return false;
     }

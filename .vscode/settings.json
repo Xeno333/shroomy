@@ -76,6 +76,7 @@
         "*.lua": "cpp",
         "text_encoding": "cpp",
         "__bit_reference": "cpp",
-        "__functional_03": "cpp"
+        "__functional_03": "cpp",
+        "__node_handle": "cpp"
     }
 }

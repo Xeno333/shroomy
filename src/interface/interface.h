@@ -31,6 +31,7 @@ class Interface {
         bool PlaySound(std::string name, int loop);
         bool RenderTexture(std::string name, SDL_Rect* pos);
         void ResizeWindow(int w, int h);
+        void SetWindowName(const std::string name);
         void Render();
         void Clear();
 
@@ -91,6 +92,6 @@ class Interface {
 };
 
 
-#define INTERFACE true
+#define INTERFACE
 
 #endif

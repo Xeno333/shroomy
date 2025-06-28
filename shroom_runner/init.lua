@@ -7,6 +7,7 @@ local shroom_world = {
     y = 400
 }
 shroomy.set_window_size(shroom_world.x, shroom_world.y + 64)
+shroomy.set_window_name("Shroom Runner")
 shroomy.load_texture("shroom_boy", "textures/shroom_boy.png")
 shroomy.load_texture("bad_shroom", "textures/bad_shroom.png")
 shroomy.set_tick(17)

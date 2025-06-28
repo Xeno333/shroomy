@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -7,6 +8,7 @@
 #include "luaenv.h"
 #include "main.h"
 #include "interface/interface.h"
+#include "network/network.h"
 
 
 
@@ -88,6 +90,18 @@ static int set_window_size(lua_State* L) {
     return 1;
 }
 
+static int set_window_name(lua_State* L) {
+    if (lua_isstring(L, 1)) {
+        Main::Window.SetWindowName(lua_tostring(L, 1));
+
+        lua_pushboolean(L, true);
+        return 1;
+    }
+    
+    lua_pushboolean(L, false);
+    return 1;
+}
+
 static int set_tick(lua_State* L) {
     if (lua_isnumber(L, 1)) {
         Main::tick_time_ms = (int)lua_tointeger(L, 1);
@@ -100,12 +114,12 @@ static int set_tick(lua_State* L) {
     return 1;
 }
 
-unsigned long long k_random_seed;
-unsigned long long k_random_current_rand = 0;
-unsigned long long k_random_rand_s = 0;
+uint64_t k_random_seed;
+uint64_t k_random_current_rand = 0;
+uint64_t k_random_rand_s = 0;
 
 static int k_random(lua_State* L) {
-    unsigned long long r = k_random_current_rand | ~k_random_seed;
+    uint64_t r = k_random_current_rand | ~k_random_seed;
     r *= 2734848569;
     k_random_current_rand = r  ^ k_random_rand_s;
 
@@ -116,6 +130,67 @@ static int k_random(lua_State* L) {
     return 1;
 }
 
+static int send_to_server(lua_State* L) {
+    if (Main::NetworkingConf == Network::CLIENT) {
+        if (lua_istable(L, 1)) {
+            lua_pushnil(L);
+            uint64_t data[128] = {0};
+            int i = 0;
+
+            while (i < 128 && lua_next(L, -2) != 0) {
+                if (lua_isnumber(L, -1)) {
+                    data[i++] = (uint64_t)lua_tointeger(L, -1);
+                }
+
+                lua_pop(L, 1);
+            }
+            lua_pop(L, 1);
+
+            Main::client.Send(data, 128);
+
+            lua_pushboolean(L, true);
+            return 1;
+        }
+
+        lua_pushboolean(L, false);
+        return 1;
+    }
+
+    lua_pushnil(L);
+    return 1;
+}
+
+static int send_to_client(lua_State* L) {
+    if (Main::NetworkingConf == Network::SERVER) {
+        if (lua_isnumber(L, 1) && lua_istable(L, 2)) {
+            int id = lua_tointeger(L, 1);
+
+            lua_pushnil(L);
+            uint64_t data[128] = {0};
+            int i = 0;
+
+            while (i < 128 && lua_next(L, -2) != 0) {
+                if (lua_isnumber(L, -1)) {
+                    data[i++] = (uint64_t)lua_tointeger(L, -1);
+                }
+
+                lua_pop(L, 1);
+            }
+            lua_pop(L, 1);
+
+            Main::server.Send(id, data, 128);
+
+            lua_pushboolean(L, true);
+            return 1;
+        }
+
+        lua_pushboolean(L, false);
+        return 1;
+    }
+
+    lua_pushnil(L);
+    return 1;
+}
 
 
 // Registration
@@ -136,14 +211,28 @@ void LuaAPI::LoadLuaAPI(LuaInterface *lua_instance) {
     lua_newtable(lua_state);
     lua_setglobal(lua_state, "shroomy");
 
-    #ifdef SHROOMY_DEBUG_LUA
-        lua_getglobal(lua_state, "shroomy");
+    lua_getglobal(lua_state, "shroomy");
 
+    #ifdef SHROOMY_DEBUG_LUA
         lua_pushboolean(lua_state, true);
         lua_setfield(lua_state, -2, "IS_DEBUG");
-
-        lua_pop(lua_state, 1);
     #endif
+
+    switch (Main::NetworkingConf) {
+        case Network::CLIENT:
+            lua_pushstring(lua_state, "client");
+            break;
+        case Network::SERVER:
+            lua_pushstring(lua_state, "server");
+            break;
+        default:
+            lua_pushstring(lua_state, "none");
+            break;
+    }
+    lua_setfield(lua_state, -2, "mode");
+
+    lua_pop(lua_state, 1);
+
 
     std::ifstream keyconf(Main::Path + "keyconf.scf");
     if (keyconf.is_open()) {
@@ -171,8 +260,11 @@ void LuaAPI::LoadLuaAPI(LuaInterface *lua_instance) {
         KeyBinds["SPACE"] = SDL_SCANCODE_SPACE;
     }
 
-    k_random_seed = (unsigned long long)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+    k_random_seed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
 
+
+    RegisterFunction(lua_state, "send_to_client", &send_to_client);
+    RegisterFunction(lua_state, "send_to_server", &send_to_server);
     RegisterFunction(lua_state, "k_random", &k_random);
     RegisterFunction(lua_state, "set_tick", &set_tick);
     RegisterFunction(lua_state, "shroomy_say", &shroomy_say);
@@ -182,4 +274,5 @@ void LuaAPI::LoadLuaAPI(LuaInterface *lua_instance) {
     RegisterFunction(lua_state, "render_texture", &render_texture);
     RegisterFunction(lua_state, "is_key_pressed", &is_key_pressed);
     RegisterFunction(lua_state, "set_window_size", &set_window_size);
+    RegisterFunction(lua_state, "set_window_name", &set_window_name);
 }

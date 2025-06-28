@@ -24,6 +24,9 @@ All the lua API functions are located in the `shroomy` table.
 - `set_window_size(w, h)`
     Set window size in pixels of `w, h`. Returens `true` unless bad params, in which case `false` is returned.
 
+- `set_window_name(name)`
+    Set window's name.
+
 - `set_tick(ms)`
     Set tick rate at which `OnGameTick(ms)` is called. Returns `true`/`false` based on params being valid number. Default is `10` ms.
 
@@ -32,6 +35,23 @@ All the lua API functions are located in the `shroomy` table.
 
 - `k_random()`
     Returns an number. **WARNING**: Not true random, this is for internal use in `random`.
+
+- `send_to_client(id, data)`
+    Sends a table of up to 128 number (as numbers, must be 64 bit) to client `id`.
+
+- `send_to_server(data)`
+    Sends a table of up to 1024 number (as numbers, must be 64 bit) to server.
+
+## Flags
+
+Some flags are stored in the `shroomy` table.
+
+- `IS_DEBUG`
+    Lua debug flag.
+
+- `mode`
+    Will be `server`, `client`, or `none`, depending on mode.
+
 
 # Lua provided
 
@@ -80,3 +100,13 @@ In order for a game to run one of the two game functions **MUST** be set.
 
 - `OnGameTick(ms)`
     Run once every game tick. For main game code, controls etc.
+
+## Client/Server callbacks
+
+- `Server(id, data)`
+    Server interface called every time a client sends data to server, client id is stored in `id` while a table of up to 1024 numbers (64 bit) is stored in `data`.
+    Called with `data = nil` when a client disconnects.
+    Called every game tick.
+
+- `Client(data)`
+    Called every game tick. If data was sent to the client by the server it is a table of up to 1024 numbers (64 bit) stored in `data`.

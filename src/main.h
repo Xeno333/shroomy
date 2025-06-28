@@ -1,4 +1,5 @@
 #include "interface/interface.h"
+#include "network/network.h"
 
 
 namespace Main {
@@ -7,8 +8,13 @@ namespace Main {
         std::string Path;
     } Texture;
 
+    extern bool Running;
+
     extern std::string Path;
     extern Interface Window;
     extern int tick_time_ms;
-    extern bool Running;
+
+    extern Server server;
+    extern Client client;
+    extern Network::NetworkState NetworkingConf;
 }

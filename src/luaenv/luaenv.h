@@ -9,7 +9,7 @@
             lua_State* GetTheState();
 
             bool RunFile(std::string filename);
-            bool RunString(std::string lua_string);
+            bool RunString(std::string lua_string, bool show_output = true);
             bool IsValid();
 
             LuaInterface() {
