@@ -42,6 +42,10 @@ All the lua API functions are located in the `shroomy` table.
 - `send_to_server(data)`
     Sends a table of up to 1024 number (as numbers, must be 64 bit) to server.
 
+- `get_game_path()`
+    Returns path that game originates in.
+
+
 ## Flags
 
 Some flags are stored in the `shroomy` table.

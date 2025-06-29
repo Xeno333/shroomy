@@ -14,16 +14,23 @@
 
 // Server
 
+void Server::Configure(int port, std::string adr) {
+    Address.sin_family = AF_INET;
+
+    Address.sin_port = htons(port);
+    Address.sin_addr.s_addr = inet_addr(adr.c_str());
+    Configured = true;
+}
+
 bool Server::Init() {
+    if (!Configured)
+        return false;
+
     Socket = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
     if (Socket == -1) {
         std::cout << "Error starting server: Could not open to socket!" << std::endl;
         return false;
     }
-
-    Address.sin_family = AF_INET;
-    Address.sin_addr.s_addr = inet_addr("127.0.0.1");
-    Address.sin_port = htons(28090);
 
     if (bind(Socket, (sockaddr*)&Address, sizeof(Address)) == -1) {
         std::cout << "Error starting server: Could not bind to socket!" << std::endl;
@@ -67,7 +74,7 @@ bool Server::Serve(LuaInterface* env) {
     for (const int ClientSocket : ClientSockets) {
         // Run a few times to make avoid falling behind and filling up que
         for (int it = 5; it != 0; it--) {
-            ssize_t ret = recv(ClientSocket, &data, 128 * sizeof(uint64_t), MSG_DONTWAIT);
+            ssize_t ret = recv(ClientSocket, &data, sizeof(data), MSG_DONTWAIT);
             if (ret > 0) {
                 std::stringstream tbl("");
 
@@ -120,7 +127,7 @@ bool Server::Serve(LuaInterface* env) {
 }
 
 bool Server::IsValid() {
-    return Valid;
+    return Valid & Configured;
 }
 
 void Server::Send(const int ClientSocket, const uint64_t* data, const int len) {
@@ -138,17 +145,23 @@ void Server::Send(const int ClientSocket, const uint64_t* data, const int len) {
 
 // Client
 
+void Client::Configure(int port, std::string adr) {
+    Address.sin_family = AF_INET;
+
+    Address.sin_port = htons(port);
+    Address.sin_addr.s_addr = inet_addr(adr.c_str());
+    Configured = true;
+}
 
 bool Client::Init() {
+    if (!Configured)
+        return false;
+
     Socket = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
     if (Socket == -1) {
         std::cout << "Client connection error: Could not open to socket!" << std::endl;
         return false;
     }
-
-    Address.sin_family = AF_INET;
-    Address.sin_port = htons(28090);
-    Address.sin_addr.s_addr = inet_addr("127.0.0.1");
 
     
     if (connect(Socket, (sockaddr*)&Address, sizeof(Address)) == -1 && errno != EINPROGRESS) {
@@ -219,9 +232,9 @@ bool Client::DoClient(LuaInterface* env) {
 
     uint64_t data[128] = {0};
 
-    // Run a few times to make avoid falling behind and filling up que
-    for (int it = 5; it != 0; it--) {
-        ssize_t ret = recv(Socket, &data, sizeof(data) - sizeof(uint64_t), MSG_DONTWAIT);
+    // Run until caught up to avoid filling que
+    while (true) {
+        ssize_t ret = recv(Socket, &data, sizeof(data), MSG_DONTWAIT);
 
         if (ret > 0) {
             std::stringstream tbl("");
@@ -256,5 +269,5 @@ bool Client::DoClient(LuaInterface* env) {
 }
 
 bool Client::IsValid() {
-    return Valid;
+    return Valid & Configured;
 }

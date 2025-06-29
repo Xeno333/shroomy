@@ -192,6 +192,13 @@ static int send_to_client(lua_State* L) {
     return 1;
 }
 
+static int get_game_path(lua_State* L) {
+    lua_pushstring(L, Main::Path.c_str());
+    return 1;
+}
+
+
+
 
 // Registration
 
@@ -263,6 +270,7 @@ void LuaAPI::LoadLuaAPI(LuaInterface *lua_instance) {
     k_random_seed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
 
 
+    RegisterFunction(lua_state, "get_game_path", &get_game_path);
     RegisterFunction(lua_state, "send_to_client", &send_to_client);
     RegisterFunction(lua_state, "send_to_server", &send_to_server);
     RegisterFunction(lua_state, "k_random", &k_random);

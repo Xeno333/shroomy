@@ -41,10 +41,24 @@ int main(int argc, char** argv) {
             std::string run_type = std::string(argv[2]);
 
             if (run_type == "S") {
+                if (argc > 4) {
+                    Main::server.Configure(std::stoi(argv[3]), argv[4]);
+                } else {
+                    std::cout << "Error: Server requires usage: shroomy <Path> S <Port> <IP>" << std::endl;
+                    return 1;
+                }
+
                 while (Main::Running && !Main::server.Init());
                 Main::NetworkingConf = Network::SERVER;
             }
             else if (run_type == "C") {
+                if (argc > 4) {
+                    Main::client.Configure(std::stoi(argv[3]), argv[4]);
+                } else {
+                    std::cout << "Error: Server requires usage: shroomy <Path> S <Port> <IP>" << std::endl;
+                    return 1;
+                }
+
                 while (Main::Running && !Main::client.Init());
                 Main::NetworkingConf = Network::CLIENT;
             }

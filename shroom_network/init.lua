@@ -1,4 +1,5 @@
 local time = 0
+local tick_rate = 17
 local shroom_world = {
     x = 1200,
     y = 400
@@ -8,8 +9,6 @@ local clients = {}
 
 
 if shroomy.mode == "client" then
-    shroomy.set_tick(17)
-
     shroomy.set_window_size(shroom_world.x, shroom_world.y + 64)
     shroomy.load_texture("shroom_boy", "textures/shroom_boy.png")
     shroomy.set_window_name("shrooms multiplayer")
@@ -20,26 +19,25 @@ if shroomy.mode == "client" then
         end
     end
 
+    shroomy.set_tick(tick_rate)
     shroomy.send_to_server({1})
 
     local client_id = nil
     local last = 0
 
     function Client(data)
-        if data then
-            if data[1] ~= 12345678 then return end
+        if data[1] ~= 12345678 then return end
 
-            if not client_id then
-                client_id = data[2]
-            end
-
-            if not clients[data[3]] then
-                clients[data[3]] = entity.new({"shroom_boy"}, 0, {x = 100, y = shroom_world.y}, {y = 64, x = 64}, {x_min = -24, x_max = 24, y_min = -24, y_max = 32})
-            end
-
-            clients[data[3]].pos.x = data[4]
-            clients[data[3]].pos.y = data[5]
+        if not client_id then
+            client_id = data[2]
         end
+
+        if not clients[data[3]] then
+            clients[data[3]] = entity.new({"shroom_boy"}, 0, {x = 100, y = shroom_world.y}, {y = 64, x = 64}, {x_min = -24, x_max = 24, y_min = -24, y_max = 32})
+        end
+
+        clients[data[3]].pos.x = data[4]
+        clients[data[3]].pos.y = data[5]
     end
 
     function OnGameTick(time_ms)
@@ -65,7 +63,7 @@ if shroomy.mode == "client" then
     end
 
 elseif shroomy.mode == "server" then
-    shroomy.set_tick(17/2)
+    shroomy.set_tick(tick_rate/2)
 
     function Server(id, data)
         if not data then

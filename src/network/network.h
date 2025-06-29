@@ -19,13 +19,15 @@
     class Client {
         private:
             bool Valid = false;
-
-        public:
+            bool Configured = false;
             sockaddr_in Address;
             int Socket = -1;
+            
 
+        public:
             void Send(const uint64_t* data, const int len);
             bool DoClient(LuaInterface* env);
+            void Configure(int port, std::string adr);
             bool Init();
             bool IsValid();
 
@@ -43,6 +45,7 @@
     class Server {
         private:
             bool Valid = false;
+            bool Configured = false;
             int Socket = -1;
             sockaddr_in Address;
             std::vector<int>ClientSockets;
@@ -51,6 +54,7 @@
             void Send(const int ClientSocket, const uint64_t* data, const int len);
             bool IsValid();
             bool Serve(LuaInterface* env);
+            void Configure(int port, std::string adr);
             bool Init();
 
             ~Server() {
