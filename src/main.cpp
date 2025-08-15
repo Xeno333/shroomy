@@ -79,7 +79,10 @@ int main(int argc, char** argv) {
     InternalLua::RunInternalLua(&LuaMainInstance);
 
     // Run lua code
-    LuaMainInstance.RunFile(Main::Path + "init.lua");
+    if (!LuaMainInstance.RunFile(Main::Path + "init.lua")) {
+        std::cout << "[EngineLuaEnv] Could not load main script!" << std::endl;
+        return 1;
+    }
 
 
     // Load mods
@@ -231,6 +234,7 @@ int main(int argc, char** argv) {
     } else {
         std::cout << "[EngineLuaEnv] Neither 'OnGameTick' or 'RenderLoop' are defined, OR attempting to run server/client without interface!" << std::endl;
         std::cout << "[EngineLuaEnv] Client is " << Do_Client << ", Server is " << Do_Server << ", OnGameTick is " << Do_OnGameTick << ", RenderLoop is " << Do_RenderLoop << std::endl;
+        return 1;
     }
 
     return 0;
