@@ -7,7 +7,7 @@ void Interface::Render() {
 }
 
 void Interface::Clear() {
-    SDL_SetRenderDrawColor(Renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(Renderer, background_red, background_green, background_blue, 255);
     SDL_RenderClear(Renderer);
 }
 

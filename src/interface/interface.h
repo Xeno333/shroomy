@@ -18,6 +18,10 @@ class Interface {
         SDL_Renderer* Renderer = nullptr;
         bool Valid = false;
 
+        int background_red = 0;
+        int background_green = 0;
+        int background_blue = 0;
+
         const bool* KeyStates = nullptr;
         int KeyStatesLen = 0;
 
@@ -32,6 +36,7 @@ class Interface {
         bool RenderTexture(std::string name, SDL_Rect* pos);
         void ResizeWindow(int w, int h);
         void SetWindowName(const std::string name);
+        void SetWindowColor(int r, int g, int b);
         void Render();
         void Clear();
 

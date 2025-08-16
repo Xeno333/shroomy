@@ -26,6 +26,9 @@ All the lua API functions are located in the `shroomy` table.
 
 - `set_window_name(name)`
     Set window's name.
+    
+- `set_window_color(r, g, b)`
+    Set window's color.
 
 - `set_tick(ms)`
     Set tick rate at which `OnGameTick(ms)` is called. Returns `true`/`false` based on params being valid number. Default is `10` ms.

@@ -7,7 +7,6 @@
 #include "lua_functions.h"
 #include "luaenv.h"
 #include "main.h"
-#include "interface/interface.h"
 #include "network/network.h"
 
 
@@ -113,6 +112,20 @@ static int set_tick(lua_State* L) {
     lua_pushboolean(L, false);
     return 1;
 }
+
+
+static int set_background_color(lua_State* L) {
+    if (lua_isnumber(L, 1), lua_isnumber(L, 2), lua_isnumber(L, 3)) {
+        Main::Window.SetWindowColor((int)lua_tointeger(L, 1), (int)lua_tointeger(L, 2), (int)lua_tointeger(L, 3));
+
+        lua_pushboolean(L, true);
+        return 1;
+    }
+    
+    lua_pushboolean(L, false);
+    return 1;
+}
+
 
 uint64_t k_random_seed;
 uint64_t k_random_current_rand = 0;
@@ -283,4 +296,5 @@ void LuaAPI::LoadLuaAPI(LuaInterface *lua_instance) {
     RegisterFunction(lua_state, "is_key_pressed", &is_key_pressed);
     RegisterFunction(lua_state, "set_window_size", &set_window_size);
     RegisterFunction(lua_state, "set_window_name", &set_window_name);
+    RegisterFunction(lua_state, "set_background_color", &set_background_color);
 }
