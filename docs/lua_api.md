@@ -86,6 +86,12 @@ Entities are objects defined in lua. The methods are all shared with `entity`.
 - `next_frame(self, time_since_last_ms)`
     Loads next frame for rendering, does not render. `time_since_last_ms` is the number of ms since last frame switch, to ensure proper FPS for an entity.
 
+- `set_frame(self, frame)`
+    Sets entity frame to `frame`, where `frame` is either an index or an entity tile.
+
+- `resize(self, size)`
+    Reset size of entity. **Note:** Does not change collision size.
+
 - `render(self)`
     Render entity.
 

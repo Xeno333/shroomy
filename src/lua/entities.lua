@@ -49,6 +49,20 @@ function entity.next_frame(self, time_since_last_ms)
     end
 end
 
+function entity.set_frame(self, frame)
+    if type(frame) == "number" and #(self.tiles) ~= 1 then
+        if #(self.tiles) <= frame then
+            self.current_tile = frame
+        else
+            self.current_tile = 1
+        end
+
+        self.frame = self.tiles[self.current_tile]
+    else
+        self.frame = frame
+    end
+end
+
 
 function entity.is_collided(self, obj)
     local x_min = self.pos.x + self.center_render_offset.x + self.collision_size.x_min
@@ -70,7 +84,16 @@ function entity.is_collided(self, obj)
 end
 
 
-
+function entity.resize(self, size)
+    self.size = {
+        x = size.x,
+        y = size.y
+    }
+    self.center_render_offset = {
+        x = size.x / 2,
+        y = size.y / 2
+    }
+end
 
 function entity.new(tiles, frame_time_ms, pos, size, collision_size)
     return {
@@ -105,6 +128,8 @@ function entity.new(tiles, frame_time_ms, pos, size, collision_size)
         -- Methods
         next_frame = entity.next_frame,
         render = entity.render,
-        is_collided = entity.is_collided
+        is_collided = entity.is_collided,
+        resize = entity.resize,
+        set_frame = entity.set_frame
     }
 end
