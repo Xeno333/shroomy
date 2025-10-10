@@ -1,5 +1,6 @@
 # Game directory structure
 
+```
 Path
  |
  | - <gamedata>
@@ -9,7 +10,7 @@ Path
  | - keyconf.scf
  |
  | - init.lua
-
+```
 
 # Keybinds
 
