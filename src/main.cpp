@@ -16,6 +16,7 @@ namespace Main {
     std::string Path = ".";
     int tick_time_ms = 10;
     Interface Window(true);
+    bool needs_window = true;
 
     Server server;
     Client client;
@@ -28,21 +29,16 @@ int main(int argc, char** argv) {
 
     std::cout << "Starting " << Shroomy::Version << " Copyright (c) 2025 Xeno333..." << std::endl;
 
-    if (!Main::Window.IsValid()){
-        std::cout << "Error: Video failed to initialize!" << std::endl;
-        return 1;
-    }
-
     if (argc > 1) {
         Main::Path = std::string(argv[1]) + DIR_SEP_CHAR;
         std::cout << "Loading in path " << Main::Path << std::endl;
 
-        if (argc > 2) {
-            std::string run_type = std::string(argv[2]);
-
-            if (run_type == "S") {
-                if (argc > 4) {
-                    Main::server.Configure(std::stoi(argv[3]), argv[4]);
+        for (int i = 1; i < argc; i++) {
+            std::string param = std::string(argv[i]);
+            if (param == "S") {
+                if (argc > i+2) {
+                    Main::server.Configure(std::stoi(argv[i+1]), argv[i+2]);
+                    i = i + 2;
                 } else {
                     std::cout << "Error: Server requires usage: shroomy <Path> S <Port> <IP>" << std::endl;
                     return 1;
@@ -51,18 +47,33 @@ int main(int argc, char** argv) {
                 while (Main::Running && !Main::server.Init());
                 Main::NetworkingConf = Network::SERVER;
             }
-            else if (run_type == "C") {
-                if (argc > 4) {
-                    Main::client.Configure(std::stoi(argv[3]), argv[4]);
+            else if (param == "C") {
+                if (argc > i+2) {
+                    Main::client.Configure(std::stoi(argv[i+1]), argv[i+2]);
+                    i = i + 2;
                 } else {
-                    std::cout << "Error: Server requires usage: shroomy <Path> S <Port> <IP>" << std::endl;
+                    std::cout << "Error: Server requires usage: shroomy <Path> C <Port> <IP>" << std::endl;
                     return 1;
                 }
 
                 while (Main::Running && !Main::client.Init());
                 Main::NetworkingConf = Network::CLIENT;
             }
+            else if (param == "help") {
+                std::cout << "shroomy <Path> <S/C <Port> <IP>>" << std::endl;
+                return 0;
+            }
+            else if (param == "headless") {
+                Main::needs_window = false;
+                std::cout << "WARNING: 'headless' stops render loops and does not take SDL input";
+                Main::Window.~Interface();
+            }
         }
+    }
+
+    if (!Main::Window.IsValid() && Main::needs_window){
+        std::cout << "Error: Video failed to initialize!" << std::endl;
+        return 1;
     }
 
 
@@ -115,20 +126,25 @@ int main(int argc, char** argv) {
             bool print_debug_game_tick = false;
         #endif
 
+        bool window_is_valid = Main::needs_window;
         while (Main::Running) {
             // Controls
-            Main::Window.GetEvents();
-            if (Main::Window.IsKeyPressed(SDL_SCANCODE_ESCAPE))
-                break;
+            if (window_is_valid) {
+                Main::Window.GetEvents();
+                if (Main::Window.IsKeyPressed(SDL_SCANCODE_ESCAPE))
+                    break;
 
-            #ifdef SHROOMY_DEBUG
-                current_frame = std::chrono::high_resolution_clock::now();
-                if ((std::chrono::duration_cast<std::chrono::seconds>(current_frame - last_debug_print)).count() >= 1) {
-                    last_debug_print = current_frame;
-                    print_debug = true;
-                    print_debug_game_tick = true;
-                }
-            #endif
+                #ifdef SHROOMY_DEBUG
+                    current_frame = std::chrono::high_resolution_clock::now();
+                    if ((std::chrono::duration_cast<std::chrono::seconds>(current_frame - last_debug_print)).count() >= 1) {
+                        last_debug_print = current_frame;
+                        print_debug = true;
+                        print_debug_game_tick = true;
+                    }
+                #endif
+
+                Main::Window.Clear();
+            }
 
             bool tick_now = false;
             if (Do_OnGameTick || Main::NetworkingConf != Network::NONE) {
@@ -158,9 +174,6 @@ int main(int argc, char** argv) {
                 default:
                     break;
             }
-
-            Main::Window.Clear();
-
 
             // Tick and server
             if (tick_now) {
@@ -201,35 +214,37 @@ int main(int argc, char** argv) {
 
 
             // Render
-            if (Do_RenderLoop) {
-                #ifdef SHROOMY_DEBUG
-                    auto start_render_time = std::chrono::high_resolution_clock::now();
-                #endif
+            if (window_is_valid) {
+                if (Do_RenderLoop) {
+                    #ifdef SHROOMY_DEBUG
+                        auto start_render_time = std::chrono::high_resolution_clock::now();
+                    #endif
 
-                if (!LuaMainInstance.RunString("RenderLoop()")) {
-                    break;
+                    if (!LuaMainInstance.RunString("RenderLoop()")) {
+                        break;
+                    }
+
+                    #ifdef SHROOMY_DEBUG
+                        if (print_debug)
+                            std::cout << "[DEBUG] RenderLoop took: " << (std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start_render_time)).count() << " us. to render scene." << std::endl;
+                    #endif
                 }
 
+                Main::Window.Render();
+
+
+                // FPS debug
                 #ifdef SHROOMY_DEBUG
-                    if (print_debug)
-                        std::cout << "[DEBUG] RenderLoop took: " << (std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start_render_time)).count() << " us. to render scene." << std::endl;
+                    if (print_debug) {
+                        int64_t t = (std::chrono::duration_cast<std::chrono::microseconds>(current_frame - last_frame)).count();
+                        std::cout << "[DEBUG] FPS: " << 1000000 / (t) << std::endl;
+
+                        print_debug = false;
+                    }
+
+                    last_frame = current_frame;
                 #endif
             }
-
-            Main::Window.Render();
-
-
-            // FPS debug
-            #ifdef SHROOMY_DEBUG
-                if (print_debug) {
-                    int64_t t = (std::chrono::duration_cast<std::chrono::microseconds>(current_frame - last_frame)).count();
-                    std::cout << "[DEBUG] FPS: " << 1000000 / (t) << std::endl;
-
-                    print_debug = false;
-                }
-
-                last_frame = current_frame;
-            #endif
         }
     } else {
         std::cout << "[EngineLuaEnv] Neither 'OnGameTick' or 'RenderLoop' are defined, OR attempting to run server/client without interface!" << std::endl;

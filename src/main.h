@@ -12,6 +12,7 @@ namespace Main {
 
     extern std::string Path;
     extern Interface Window;
+    extern bool needs_window;
     extern int tick_time_ms;
 
     extern Server server;
