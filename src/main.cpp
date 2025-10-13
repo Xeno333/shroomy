@@ -131,7 +131,7 @@ int main(int argc, char** argv) {
             // Controls
             if (window_is_valid) {
                 Main::Window.GetEvents();
-                if (Main::Window.IsKeyPressed(SDL_SCANCODE_ESCAPE))
+                if (Main::Window.IsKeyPressed(SDL_SCANCODE_ESCAPE) && Main::Window.IsKeyPressed(SDL_SCANCODE_LCTRL))
                     break;
 
                 #ifdef SHROOMY_DEBUG
