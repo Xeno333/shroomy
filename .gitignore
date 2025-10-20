@@ -6,3 +6,5 @@ CMakeCache.txt
 CMakeFiles/
 build/
 shroomy
+snap/
+shroomy_0.1_amd64.snap
